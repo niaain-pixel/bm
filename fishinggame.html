@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Letter Fishing Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-image: url('https://img.freepik.com/premium-vector/background-mountains-playful-cartoon-illustration-with-charming-mountain_198565-8237.jpg'); /* Changed background to image */
+            background-size: cover; /* Ensures the image covers the entire body */
+            background-repeat: no-repeat; 
+            background-position: center bottom; /* Positions the image at the bottom center */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden; /* Prevent scrollbars */
+            color: #333;
+        }
+        .game-container {
+            position: relative;
+            width: 90vw; /* Responsive width */
+            max-width: 800px; /* Max width for desktop */
+            height: 70vh; /* Responsive height */
+            max-height: 600px; /* Max height for desktop */
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background-color: #fff; /* Kept as original for the container */
+        }
+        canvas {
+           background-image: url('https://img.freepik.com/free-vector/sky-background-video-conferencing_23-2148623067.jpg?semt=ais_hybrid&w=740'); /* gambar langit */
+           background-size: cover; 
+           background-repeat: no-repeat; /* Elakkan gambar berulang */
+           background-position: center top; 
+  
+
+            display: block;
+            width: 100%;
+            height: 100%;
+            border-radius: 15px; /* Rounded corners */
+        }
+        .game-info {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #fff; /* White text for contrast on sky */
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+            z-index: 10;
+        }
+        .start-screen, .game-over-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 1.8rem;
+            text-align: center;
+            border-radius: 20px;
+            z-index: 20;
+        }
+        .start-screen h1, .game-over-screen h2 {
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+        .start-screen p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            max-width: 80%;
+        }
+        .game-over-screen p {
+            margin-top: 15px;
+            font-size: 1.5rem;
+        }
+        .game-button {
+    background-color: #4CAF50; /* Green */
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+    z-index: 1000; /* Ini memastikan butang di atas lapisan lain */
+    position: relative; /* Pastikan z-index berfungsi dengan betul */
+    touch-action: manipulation; /* Ini boleh membantu responsif sentuhan pada mudah alih */
+}
+        .game-button:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+        }
+        .game-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Message box for alerts */
+        .message-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            display: none; /* Hidden by default */
+            font-size: 1.2rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-info">
+            <div id="scoreDisplay">Markah: 0</div>
+            <div id="levelDisplay">Level: 1/5</div>
+        </div>
+        <canvas id="gameCanvas"></canvas>
+
+        <div class="start-screen" id="startScreen">
+            <h1>Mari Pancing Huruf!</h1>
+            <p>Anda dikehendaki memancing huruf mengikut padanannya.</p>
+            <button class="game-button" id="startButton">Mula</button>
+        </div>
+
+        <div class="game-over-screen hidden" id="gameOverScreen">
+            <h2>Permainan Selesai!</h2>
+            <p id="finalScoreDisplay">Markah Anda: 0</p>
+            <button class="game-button" id="restartButton">Main sekali lagi</button>
+        </div>
+
+        <div class="message-box" id="messageBox"></div>
+
+        <audio id="salahSound" src="salah.mp3" preload="auto"></audio>
+        <audio id="betulSound" src="betul.mp3" preload="auto"></audio>
+    </div>
+
+    <script>
+        // Get canvas and context
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Game state variables
+        let gameRunning = false;
+        let score = 0;
+        let currentLevel = 0; // 0 for 'A', 1 for 'B', etc.
+        let clouds = []; // Will only contain one static cloud
+        let waterLetters = [];
+        let fishingRod = {
+            x: canvas.width / 2,
+            y: 0, // This will be dynamic, set by boat position
+            lineLength: 0,
+            dropping: false,
+            retracting: false,
+            caughtWaterLetter: null, // Changed from caughtCloud
+            speed: 5 // Speed of line dropping/retracting
+        };
+
+        // New boat object
+        let boat = {
+            img: new Image(),
+            x: 0,
+            y: 0,
+            width: 150, // Initial width, will be scaled
+            height: 100, // Initial height, will be scaled
+        };
+        // Set the boat image source to the new URL
+        boat.img.src = 'https://i.ibb.co/sJVt7Tz4/Pngtree-hand-drawn-cartoon-boat-illustration-4755316.png';
+
+        // New turtle image for water letters
+        let bubbleImage = new Image();
+        bubbleImage.src = 'https://i.ibb.co/gMfKjfcv/2.png'; 
+
+        // Image for the sun
+        let cloudImage = new Image();
+        cloudImage.src = 'https://png.pngtree.com/png-clipart/20240506/ourmid/pngtree-simple-cartoon-sun-yellow-orange-png-image_12348743.png'; 
+
+        // Game configuration
+        const ALPHABET_SEQUENCE = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const MAX_LEVELS = 26; // Changed to 5 levels (A through Z)
+        const CLOUD_HEIGHT_MIN = 50;
+        const CLOUD_HEIGHT_MAX = 150;
+        const WATER_LEVEL_RATIO = 0.6; // Water starts at 60% of canvas height
+        const LETTER_SIZE = 35;
+        const BUBBLE_SIZE = LETTER_SIZE * 3; // Size of the bubble, twice the letter size
+        // ROD_BASE_Y is now dynamic, tied to boat.y
+        let LINE_MAX_LENGTH = 0; // Changed to 'let' so it can be updated
+
+        // UI elements
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const levelDisplay = document.getElementById('levelDisplay'); // New element for level
+        const startScreen = document.getElementById('startScreen');
+        const gameOverScreen = document.getElementById('gameOverScreen');
+        const finalScoreDisplay = document.getElementById('finalScoreDisplay');
+        const startButton = document.getElementById('startButton');
+        const restartButton = document.getElementById('restartButton');
+        const messageBox = document.getElementById('messageBox');
+
+        // Get audio elements
+        const salahAudio = document.getElementById('salahSound');
+        const betulAudio = document.getElementById('betulSound');
+
+        // Play a simple "wrong" sound using the audio tag
+        function playWrongSound() {
+            if (salahAudio) {
+                salahAudio.currentTime = 0; // Restart sound if already playing
+                salahAudio.play().catch(e => console.error("Error playing wrong sound:", e));
+            }
+        }
+
+        // Play a simple "correct" sound using the audio tag
+        function playCorrectSound() {
+            if (betulAudio) {
+                betulAudio.currentTime = 0; // Restart sound if already playing
+                betulAudio.play().catch(e => console.error("Error playing correct sound:", e));
+            }
+        }
+
+        // Helper function to show messages
+        function showMessage(message, duration = 2000) {
+            messageBox.textContent = message;
+            messageBox.style.display = 'block';
+            setTimeout(() => {
+                messageBox.style.display = 'none';
+            }, duration);
+        }
+
+        // Adjust canvas size and game parameters on resize
+        function resizeCanvas() {
+            const container = document.querySelector('.game-container');
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+
+            // Update fishing rod x position
+            fishingRod.x = canvas.width / 2;
+
+            // Calculate boat dimensions and position
+            boat.width = canvas.width * 0.2; // 20% of canvas width
+            boat.height = boat.width / 2; // Maintain aspect ratio (original image 1000x500)
+
+            // Boat's Y position: just above the water line
+            boat.y = canvas.height * WATER_LEVEL_RATIO - boat.height * 0.8; // Adjust .8 for how much of boat is above water
+
+            // Adjust fishing rod base to be on the boat
+            fishingRod.y = boat.y + (boat.height * 0.1); // Rod base slightly above boat's top edge
+            
+            // Recalculate max line length based on new rod Y
+            LINE_MAX_LENGTH = canvas.height - fishingRod.y - 10; // Line extends from rod base to near bottom of canvas
+
+            // Regenerate letters if game is running to adapt to new canvas size
+            if (gameRunning) {
+                generateLetters();
+            }
+        }
+
+        // Generate random letters for clouds and water for the current level
+        function generateLetters() {
+            clouds = []; // Will only contain the static indicator cloud
+            waterLetters = [];
+
+            // Get the capital letter for the current level (static indicator)
+            const capitalLetter = ALPHABET_SEQUENCE[currentLevel];
+            const correctLowercaseLetter = capitalLetter.toLowerCase();
+
+            // Cloud position (only one static cloud)
+            const cloudX = canvas.width / 2; // Center the capital letter
+            const cloudY = CLOUD_HEIGHT_MIN + (CLOUD_HEIGHT_MAX - CLOUD_HEIGHT_MIN) / 2; // Fixed Y for static cloud
+            clouds.push({
+                letter: capitalLetter,
+                x: cloudX,
+                y: cloudY,
+                originalY: cloudY, // Still keep originalY for consistency, though it won't move
+                caught: false, // This cloud will never be caught
+                matched: false
+            });
+
+            // Generate three unique lowercase letters for the water (one correct, two incorrect)
+            const possibleWaterLetters = [correctLowercaseLetter];
+            const alphabet = 'abcdefghijklmnopqrstuvwxyz'; // Lowercase alphabet
+            while (possibleWaterLetters.length < 3) {
+                const randomIndex = Math.floor(Math.random() * alphabet.length);
+                const randomLowercase = alphabet[randomIndex];
+
+                // Ensure the random letter is not the correct one and not already in the array
+                if (randomLowercase !== correctLowercaseLetter && !possibleWaterLetters.includes(randomLowercase)) {
+                    possibleWaterLetters.push(randomLowercase);
+                }
+            }
+
+            // Shuffle the water letters to randomize position of correct answer
+            for (let i = possibleWaterLetters.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [possibleWaterLetters[i], possibleWaterLetters[j]] = [possibleWaterLetters[j], possibleWaterLetters[i]];
+            }
+
+            // Place water letters
+            const waterAreaHeight = canvas.height * (1 - WATER_LEVEL_RATIO);
+            const waterStartY = canvas.height * WATER_LEVEL_RATIO;
+            const horizontalSpacing = canvas.width / 4; // Divide canvas into 4 sections for 3 letters
+
+            for (let i = 0; i < possibleWaterLetters.length; i++) {
+                const letter = possibleWaterLetters[i];
+                // Distribute letters horizontally
+                const waterX = (i + 1) * horizontalSpacing;
+                const waterY = waterStartY + waterAreaHeight / 2 + (Math.random() * 30 - 15); // Add slight vertical variation
+                waterLetters.push({
+                    letter: letter,
+                    x: waterX,
+                    y: waterY,
+                    originalX: waterX, // Store original position for returning if incorrect
+                    originalY: waterY,
+                    matched: false
+                });
+            }
+            levelDisplay.textContent = `Level: ${currentLevel + 1}/${MAX_LEVELS}`;
+        }
+
+        // Draw functions
+        function drawSky() {
+            // Sky gradient is handled by canvas background-color in CSS
+        }
+
+        function drawWater() {
+            ctx.fillStyle = 'rgba(0, 191, 255, 1)'; // Deep blue for water
+            ctx.fillRect(0, canvas.height * WATER_LEVEL_RATIO, canvas.width, canvas.height * (1 - WATER_LEVEL_RATIO));
+
+            // Add some wave effect (simple animation)
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height * WATER_LEVEL_RATIO);
+            for (let i = 0; i < canvas.width; i += 20) {
+                ctx.lineTo(i, canvas.height * WATER_LEVEL_RATIO + Math.sin(i * 0.05 + Date.now() * 0.002) * 5);
+            }
+            ctx.lineTo(canvas.width, canvas.height * WATER_LEVEL_RATIO);
+            ctx.closePath();
+            ctx.fillStyle = 'rgba(0, 150, 255, 1)';
+            ctx.fill();
+        }
+
+       function drawCloud(cloud) {
+            const cloudImageSize = 90; // Saiz imej matahari 
+            // Pastikan imej telah dimuatkan sebelum cuba melukisnya
+            if (cloudImage.complete) {
+                // Melukis imej awan baru (lunar surface) di posisi awan
+                // cloud.x dan cloud.y adalah titik tengah, jadi kita tolak separuh saiz untuk dapatkan top-left
+                ctx.drawImage(cloudImage, cloud.x - cloudImageSize / 2, cloud.y - cloudImageSize / 2, cloudImageSize, cloudImageSize);
+            }
+
+            // Reset shadow properties sebelum melukis huruf, memastikan huruf tiada bayangan
+            ctx.shadowColor = 'rgba(0, 0, 0, 0)';
+            ctx.shadowBlur = 0;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
+
+            // Lukis huruf di atas awan (lunar surface)
+            ctx.fillStyle = '#000000'; // Warna tulisan hitam
+            ctx.font = `${LETTER_SIZE}px 'Inter'`; // Fon untuk tulisan awan
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(cloud.letter, cloud.x, cloud.y + 5); // Laraskan Y jika perlu untuk centering lebih baik pada imej baru
+        }
+        function drawWaterLetter(letter) {
+            // Draw the bubble image first
+            if (bubbleImage.complete) {
+                const bubbleX = letter.x - BUBBLE_SIZE / 2;
+                const bubbleY = letter.y - BUBBLE_SIZE / 2;
+                ctx.drawImage(bubbleImage, bubbleX, bubbleY, BUBBLE_SIZE, BUBBLE_SIZE);
+            }
+
+            // Draw the letter on top of the bubble
+            ctx.fillStyle = '#000000'; // Darker color for text 
+            ctx.font = `${LETTER_SIZE}px 'Comic Sans Ms'`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(letter.letter, letter.x -5, letter.y);
+        }
+
+        // Draw boat function
+        function drawBoat() {
+            // Make boat.x follow fishingRod.x, but clamp it to canvas bounds
+            boat.x = fishingRod.x - boat.width / 2;
+            if (boat.x < 0) boat.x = 0;
+            if (boat.x + boat.width > canvas.width) boat.x = canvas.width - boat.width;
+
+            if (boat.img.complete) {
+                ctx.drawImage(boat.img, boat.x, boat.y, boat.width, boat.height);
+            }
+        }
+
+        // Draw fishing rod (modified to use fishingRod.y as its base)
+        function drawFishingRod() {
+            // Rod
+            ctx.strokeStyle = '#8B4513'; // Brown
+            ctx.lineWidth = 8;
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            ctx.moveTo(fishingRod.x, fishingRod.y); // Use fishingRod.y as origin
+            ctx.lineTo(fishingRod.x, fishingRod.y + 50); // Short rod handle
+            ctx.stroke();
+
+            // Line
+            ctx.strokeStyle = '#555'; // Dark grey
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(fishingRod.x, fishingRod.y + 50);
+            ctx.lineTo(fishingRod.x, fishingRod.y + 50 + fishingRod.lineLength);
+            ctx.stroke();
+
+            // Hook (simple triangle)
+            ctx.fillStyle = '#555';
+            ctx.beginPath();
+            ctx.moveTo(fishingRod.x, fishingRod.y + 50 + fishingRod.lineLength);
+            ctx.lineTo(fishingRod.x - 5, fishingRod.y + 50 + fishingRod.lineLength + 10);
+            ctx.lineTo(fishingRod.x + 5, fishingRod.y + 50 + fishingRod.lineLength + 10);
+            ctx.closePath();
+            ctx.fill();
+
+            // If a water letter is caught, draw it attached to the hook
+            if (fishingRod.caughtWaterLetter) {
+                // Position the caught letter at the hook
+                fishingRod.caughtWaterLetter.x = fishingRod.x;
+                fishingRod.caughtWaterLetter.y = fishingRod.y + 50 + fishingRod.lineLength + LETTER_SIZE / 2;
+                drawWaterLetter(fishingRod.caughtWaterLetter); // Reuse drawWaterLetter
+            }
+        }
+
+        // Game logic functions
+        function updateGame() {
+            if (!gameRunning) return;
+
+            // Move line down
+            if (fishingRod.dropping) {
+                fishingRod.lineLength += fishingRod.speed;
+                // Check for collision with water letters when dropping
+                const hookX = fishingRod.x;
+                const hookY = fishingRod.y + 50 + fishingRod.lineLength;
+
+                if (fishingRod.caughtWaterLetter === null) { // Only try to catch if nothing is caught
+                    for (let i = 0; i < waterLetters.length; i++) {
+                        const waterLetter = waterLetters[i];
+                        // Collision detection with the bubble area
+                        const distance = Math.sqrt(
+                            (hookX - waterLetter.x) ** 2 + (hookY - waterLetter.y) ** 2
+                        );
+                        if (distance < BUBBLE_SIZE / 2 + 5) { // Hook near a water letter's bubble
+                            fishingRod.caughtWaterLetter = waterLetter;
+                            waterLetter.checkedMatch = false; // Initialize new flag for match check
+                            // Remove from active waterLetters array temporarily
+                            waterLetters.splice(i, 1); // Remove from array
+                            fishingRod.dropping = false;
+                            fishingRod.retracting = true; // Start retracting with the letter
+                            break;
+                        }
+                    }
+                }
+
+                if (fishingRod.lineLength > LINE_MAX_LENGTH) {
+                    fishingRod.lineLength = LINE_MAX_LENGTH;
+                    fishingRod.dropping = false;
+                    // If line reached max length and nothing was caught, retract it
+                    if (fishingRod.caughtWaterLetter === null) {
+                        fishingRod.retracting = true;
+                    }
+                }
+            }
+
+            // Move line up (retracting)
+            if (fishingRod.retracting) {
+                if (fishingRod.caughtWaterLetter) {
+                    const caughtLetter = fishingRod.caughtWaterLetter;
+                    const topOfRodY = fishingRod.y + 50 + LETTER_SIZE / 2;
+
+                    // Phase 1: Pull letter up to the rod
+                    if (caughtLetter.y > topOfRodY && !caughtLetter.checkedMatch) {
+                        caughtLetter.y -= fishingRod.speed * 2;
+                        fishingRod.lineLength = Math.max(0, fishingRod.lineLength - fishingRod.speed * 2);
+                    } else {
+                        // Phase 2: Letter is at the top, check match if not already checked
+                        if (!caughtLetter.checkedMatch) {
+                            checkMatch(); // This will set caughtLetter.matched and play sound/message
+                            caughtLetter.checkedMatch = true;
+                        }
+
+                        // Phase 3: Based on match result, either transition or return letter
+                        if (caughtLetter.matched) {
+                            // Correct match: Finish retraction and transition to next level
+                            fishingRod.lineLength = Math.max(0, fishingRod.lineLength - fishingRod.speed * 2); // Continue retracting
+                            if (fishingRod.lineLength <= 0) {
+                                fishingRod.lineLength = 0;
+                                fishingRod.retracting = false;
+                                fishingRod.caughtWaterLetter = null; // Clear caught letter
+                                // Level progression is now handled directly in checkMatch for correct answers
+                            }
+                        } else {
+                            // Incorrect match: Letter is removed and rod retracts
+                            // The letter was already removed from waterLetters when caught.
+                            // Now just ensure the rod retracts fully.
+                            fishingRod.lineLength = Math.max(0, fishingRod.lineLength - fishingRod.speed * 2); // Retract line
+
+                            if (fishingRod.lineLength <= 0) {
+                                fishingRod.lineLength = 0;
+                                fishingRod.retracting = false;
+                                fishingRod.caughtWaterLetter = null; // Clear caught letter
+                            }
+                        }
+                    }
+                } else {
+                    // No letter caught, just retract the line
+                    fishingRod.lineLength -= fishingRod.speed * 2;
+                    if (fishingRod.lineLength <= 0) {
+                        fishingRod.lineLength = 0;
+                        fishingRod.retracting = false;
+                    }
+                }
+            }
+        }
+
+        function checkMatch() {
+            if (fishingRod.caughtWaterLetter) {
+                const caughtLetter = fishingRod.caughtWaterLetter;
+                const capitalLetterInCloud = clouds[0].letter; // Get the static capital letter
+
+                if (caughtLetter.letter.toUpperCase() === capitalLetterInCloud) {
+                    // Correct match
+                    caughtLetter.matched = true; // Mark as matched
+                    score += 2; // Add 2 marks
+                    scoreDisplay.textContent = `Score: ${score}`;
+                    showMessage(`Betul! +2 markah!`);
+                    playCorrectSound(); // Play correct sound
+
+                    // Immediately advance level and generate new letters
+                    currentLevel++;
+                    if (currentLevel < MAX_LEVELS) {
+                        generateLetters(); // Setup next level
+                    } else {
+                        endGame(); // Game completed all levels
+                    }
+                    // Resetting fishingRod state will be handled by updateGame as line retracts.
+                    // No need to clear caughtWaterLetter or set retracting/lineLength here,
+                    // as updateGame will naturally transition the rod state.
+                } else {
+                    // Incorrect match
+                    showMessage(`Cuba lagi!`);
+                    playWrongSound(); // Play the wrong sound
+
+                    // For incorrect answers, we immediately clear the caught letter
+                    // and let the retraction logic in updateGame handle the rest.
+                    fishingRod.caughtWaterLetter = null;
+                }
+            }
+        }
+
+
+        // Animation loop
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas
+
+            drawSky();
+            drawWater();
+            drawBoat(); // Draw the boat
+
+            clouds.forEach(drawCloud); // Draw the static cloud
+            waterLetters.forEach(drawWaterLetter); // Draw water letters that are not caught
+
+            drawFishingRod(); // Draw rod and potentially the caught letter
+
+            updateGame();
+
+            requestAnimationFrame(animate); // Loop
+        }
+
+        // Game control functions
+        function startGame() {
+            score = 0;
+            currentLevel = 0; // Reset level for new game
+            scoreDisplay.textContent = `Score: ${score}`;
+            levelDisplay.textContent = `Level: ${currentLevel + 1}/${MAX_LEVELS}`;
+            startScreen.classList.add('hidden');
+            gameOverScreen.classList.add('hidden');
+            gameRunning = true;
+            resizeCanvas(); // Initialize and position elements
+            generateLetters(); // Generate letters for the first level
+            // initAudio(); // No longer needed for HTML audio tags
+            animate(); // Start the animation loop
+        }
+
+        function endGame() {
+            gameRunning = false;
+            finalScoreDisplay.textContent = `Markah anda: ${score}`;
+            gameOverScreen.classList.remove('hidden');
+        }
+
+        // Event Listeners
+        startButton.addEventListener('click', startGame);
+        restartButton.addEventListener('click', startGame);
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (gameRunning && !fishingRod.dropping && !fishingRod.retracting) {
+                const rect = canvas.getBoundingClientRect();
+                fishingRod.x = e.clientX - rect.left;
+                // Keep rod within canvas bounds
+                if (fishingRod.x < 0) fishingRod.x = 0;
+                if (fishingRod.x > canvas.width) fishingRod.x = canvas.width;
+            }
+        });
+
+        canvas.addEventListener('mousedown', () => {
+            if (gameRunning && !fishingRod.dropping && !fishingRod.retracting) {
+                fishingRod.dropping = true;
+                fishingRod.lineLength = 0; // Start line from top
+            }
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            if (gameRunning && fishingRod.dropping && fishingRod.caughtWaterLetter === null) {
+                // If line was dropping but nothing caught, retract it
+                fishingRod.dropping = false;
+                fishingRod.retracting = true;
+            }
+        });
+
+        // Handle touch events for mobile
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault(); // Prevent scrolling
+            if (gameRunning && !fishingRod.dropping && !fishingRod.retracting) {
+                const rect = canvas.getBoundingClientRect();
+                fishingRod.x = e.touches[0].clientX - rect.left;
+                if (fishingRod.x < 0) fishingRod.x = 0;
+                if (fishingRod.x > canvas.width) fishingRod.x = canvas.width;
+            }
+        });
+
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // Prevent scrolling
+            if (gameRunning && !fishingRod.dropping && !fishingRod.retracting) {
+                fishingRod.dropping = true;
+                fishingRod.lineLength = 0;
+            }
+        });
+
+        canvas.addEventListener('touchend', (e) => {
+            e.preventDefault(); // Prevent scrolling
+            if (gameRunning && fishingRod.dropping && fishingRod.caughtWaterLetter === null) {
+                fishingRod.dropping = false;
+                fishingRod.retracting = true;
+            }
+        });
+
+        // Initial setup
+        window.onload = function() {
+            resizeCanvas();
+            // The game starts from the start screen, so animate() is called by startGame()
+        };
+
+        window.addEventListener('resize', resizeCanvas);
+    </script>
+</body>
+</html>
