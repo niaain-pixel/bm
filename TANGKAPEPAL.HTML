@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tangkap Buah Fonik!</title>
+    <style>
+        /* Gaya (CSS) untuk game */
+        body {
+            font-family: 'Comic Sans MS', Comic Sans MS;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            overflow: hidden; /* Sembunyikan scrollbar jika game melampaui */
+        }
+        #game-area {
+            width: 800px;
+            height: 600px;
+            border: 2px solid #333;
+            background-image: url('https://4kwallpapers.com/images/walls/thumbs_2t/17734.jpg'); /* Latar belakang langit biru muda */
+            position: relative;
+            overflow: hidden; /* Penting untuk buah jatuh */
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+            border-radius: 10px;
+        }
+        #player-basket {
+            width: 120px; /* Lebar bakul */
+            height: 100px; /* Tinggi bakul */
+            /*background-color: #8B4513;*/ /* Komenkan/Buang baris ini untuk guna gambar */
+            
+            /* --- INI BAHAGIAN UNTUK GAMBAR BAKUL --- */
+            background-image: url('https://png.pngtree.com/png-vector/20240902/ourmid/pngtree-wicker-basketball-clipart-illustration-isolated-on-black-background-png-image_13715302.png'); /* Laluan ke gambar bakul anda */
+            background-size: contain; /* Saiz gambar supaya muat tanpa dipotong */
+            background-repeat: no-repeat; /* Jangan ulang gambar */
+            background-position: center; /* Letakkan gambar di tengah */
+            /* --- AKHIR BAHAGIAN GAMBAR BAKUL --- */
+
+            position: absolute;
+            bottom: 10px;
+            left: calc(50% - 50px);
+            border-radius: 10px 10px 0 0; /* Bentuk seperti bakul (jika tiada gambar) */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 25px; /* Saiz font (jika ada teks dalam bakul) */
+            color: transparent; /* Jadikan teks lutsinar jika ada gambar, atau buang teks dalam HTML */
+            font-weight: bold;
+        }
+        .fruit-apple {
+            width: 90px; /* Lebar buah */
+            height: 90px; /* Tinggi buah */
+            /*background-color: #FF0000;*/ /* Komenkan/Buang baris ini untuk guna gambar */
+            
+            /* --- INI BAHAGIAN UNTUK GAMBAR EPAL (PILIHAN) --- */
+            background-image: url('https://iili.io/FvCFmTN.png'); /* URL bunga daisy anda */
+            background-size: contain; /* Saiz gambar supaya muat tanpa dipotong */
+            background-repeat: no-repeat; /* Jangan ulang gambar */
+            background-position: center; /* Letakkan gambar di tengah */
+            /* --- AKHIR BAHAGIAN GAMBAR EPAL --- */
+
+            border-radius: 50%; /* Bulat seperti epal (jika tiada gambar) */
+            position: absolute;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 30px;
+            color: black; /* Warna teks suku kata */
+            font-weight: bold;
+            box-shadow: 0px 0px 8px rgba(0,0,0,0.2); /* Adjusted shadow value (removed extra 'px') */
+        }
+        #score-display {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            font-size: 32px;
+            font-weight: bold;
+            color: #333;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.7);
+            z-index: 10; /* Make sure it's above other elements */
+        }
+        
+        /* --- CSS BARU UNTUK LEVEL DISPLAY DAN LEVEL UP MESSAGE --- */
+        #level-display {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 32px;
+            font-weight: bold;
+            color: #333;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.7);
+            z-index: 10;
+        }
+
+        #level-up-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 128, 0, 0.85); /* Warna latar hijau untuk mesej */
+            color: white;
+            padding: 25px 50px;
+            border-radius: 15px;
+            font-size: 36px;
+            font-weight: bold;
+            text-align: center;
+            z-index: 100;
+            display: none; /* Sembunyikan pada mulanya */
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+        /* --- AKHIR CSS BARU --- */
+
+        #game-over-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 44px;
+            text-align: center;
+            display: none; /* Sembunyi pada mulanya */
+            animation: fadeIn 1s ease-in-out;
+            z-index: 200; /* Pastikan ia di atas segalanya */
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        #game-over-screen h2 {
+            font-size: 60px; /* Larger font for main title */
+            margin-bottom: 20px;
+            color: #FFD700; /* Gold color for Game Over title */
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        #final-score {
+            font-size: 48px; /* Larger font for final score */
+            margin-top: 10px;
+            color: #ADD8E6; /* Light blue color */
+        }
+        #restart-button {
+            padding: 15px 35px;
+            font-size: 26px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        #restart-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-area">
+        <div id="player-basket">BAKUL</div>
+        <div id="score-display">Skor: 0</div>
+        <div id="level-display">Level: 1</div> <div id="level-up-message"></div> <div id="game-over-screen">
+            <h2>GAME OVER!</h2>
+            <span id="final-score">Skor Akhir: 0</span><br>
+            <button id="restart-button">Mula Semula</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
