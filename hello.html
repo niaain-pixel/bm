@@ -1,0 +1,1503 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fonik Bahasa Melayu</title>
+  <style>
+    body {
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      text-align: center;
+      background-color: #f0f8ff;
+      padding: 0;
+      margin: 0;
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+    }
+
+    .navbar {
+      width: 100%;
+      background-color: rgba(173, 216, 230, 0.8);
+      padding: 10px 0;
+      text-align: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      margin-bottom: 30px;
+    }
+
+    .nav-item {
+      display: inline-block;
+      padding: 10px 20px;
+      margin: 0 10px;
+      text-decoration: none;
+      color: #333;
+      font-weight: bold;
+      font-size: 20px;
+      border-radius: 8px;
+      background-color: #A7D9F0;
+      border: 1px solid #6BBBEB;
+      transition: background-color 0.3s, color 0.3s, border-color 0.3s, transform 0.2s, box-shadow 0.2s;
+    }
+
+    .nav-item:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .nav-item.active {
+      background-color: #ffdd57;
+      color: #333;
+      border: 2px solid #ffbb33;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      transform: translateY(0);
+    }
+
+    .tab-content h2 {
+      font-size: 48px;
+      background-color: rgba(255, 255, 255, 0.7);
+      display: inline-block;
+      padding: 10px 20px;
+      border-radius: 15px;
+      margin-bottom: 40px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .letter-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 30px;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    .letter-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0;
+      text-align: center;
+      background-color: rgba(255, 255, 255, 0.8);
+      padding: 20px;
+      border-radius: 25px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border: 5px solid #87CEEB;
+    }
+
+    #kv .letter-box {
+        padding: 10px;
+        min-width: 120px;
+        min-height: 120px;
+        justify-content: center;
+    }
+
+    .letter-box:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.3);
+    }
+
+    .letter-box img {
+      width: 150px;
+      height: 150px;
+      object-fit: contain;
+      border-radius: 20px;
+      border: 3px solid #fff;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .letter-box button {
+      margin-top: 15px;
+      font-size: 36px;
+      padding: 15px 30px;
+      background-color: #ffdd57;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    #kv .letter-box button {
+        margin-top: 0;
+        font-size: 40px;
+        padding: 20px 40px;
+    }
+
+    .letter-box button:hover {
+      background-color: #ffbb33;
+      transform: translateY(-2px);
+    }
+
+    .tab-content {
+      display: none;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding-top: 20px;
+    }
+
+    .tab-content.active-content {
+      display: block;
+    }
+
+    /* Gaya khusus untuk tab Permainan */
+    #permainan.tab-content {
+      background-image: url('https://cdn.photoroom.com/v2/image-cache?path=gs://background-7ef44.appspot.com/backgrounds_v3/cartoon/03_cartoon.jpg');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-attachment: fixed;
+      padding: 30px 0;
+      border-radius: 20px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+      margin-bottom: 30px;
+    }
+
+    #permainan .game-container {
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+      max-width: 600px;
+      margin: 40px auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    #permainan .score-display {
+        font-size: 28px;
+        font-weight: bold;
+        color: #6A5ACD;
+        margin-bottom: 10px;
+    }
+
+    #permainan .game-image {
+      width: 200px;
+      height: 200px;
+      object-fit: contain;
+      border: 5px solid #FFD700;
+      border-radius: 15px;
+      box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+    }
+
+    #permainan .syllable-options {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    #permainan .syllable-button {
+      background-color: #FF69B4;
+      color: white;
+      font-size: 28px;
+      font-weight: bold;
+      padding: 15px 30px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    #permainan .syllable-button:hover {
+      background-color: #CD5C5C;
+      transform: translateY(-2px);
+    }
+
+    #permainan .syllable-button:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+
+    #permainan .feedback-message {
+      margin-top: 20px;
+      font-size: 24px;
+      font-weight: bold;
+      min-height: 30px;
+    }
+
+    #permainan .feedback-message.correct {
+      color: #28a745;
+    }
+
+    #permainan .feedback-message.incorrect {
+      color: #dc3545;
+    }
+
+    #permainan .next-button {
+      background-color: #007bff;
+      color: white;
+      font-size: 22px;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      margin-top: 20px;
+    }
+
+    #permainan .next-button:hover {
+      background-color: #0056b3;
+    }
+
+    .score-board {
+        background-color: rgba(255, 255, 255, 0.95);
+        padding: 40px;
+        border-radius: 25px;
+        box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+        max-width: 500px;
+        margin: 50px auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 25px;
+        border: 5px solid #FFD700;
+    }
+
+    .score-board h2 {
+        font-size: 48px;
+        color: #FF4500;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .score-board p {
+        font-size: 32px;
+        color: #4682B4;
+        font-weight: bold;
+    }
+
+    /* Gaya untuk tab Ejaan (Drag & Drop) */
+    #ejaan.tab-content {
+        background-image: url('https://cdn.photoroom.com/v2/image-cache?path=gs://background-7ef44.appspot.com/backgrounds_v3/cartoon/03_cartoon.jpg'); /* Latar belakang sama dengan permainan */
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-attachment: fixed;
+        padding: 30px 0;
+        border-radius: 20px;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        margin-bottom: 30px;
+    }
+
+    #ejaan .spelling-game-container {
+        background-color: rgba(255, 255, 255, 0.9);
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        max-width: 700px;
+        margin: 40px auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+
+    #ejaan .spelling-controls {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    #ejaan .spelling-controls button {
+        background-color: #FFD700; /* Gold */
+        color: #333;
+        font-size: 32px;
+        padding: 15px 30px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.2s;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    #ejaan .spelling-controls button:hover {
+        background-color: #FFC400;
+        transform: translateY(-2px);
+    }
+
+    #ejaan .syllable-drag-options {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 20px;
+        min-height: 80px; /* Ruang untuk pilihan suku kata */
+    }
+
+    #ejaan .draggable-syllable {
+        background-color: #ff4d91; /* pink*/
+        color: white;
+        font-size: 28px;
+        font-weight: bold;
+        padding: 15px 25px;
+        border: 3px solid #ff3b86;
+        border-radius: 8px;
+        cursor: grab;
+        transition: background-color 0.3s, transform 0.2s, box-shadow 0.2s;
+        box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+        z-index: 10;
+        position: relative; /* Untuk drag */
+    }
+
+    #ejaan .draggable-syllable:hover {
+        background-color: #c93c72;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+    }
+
+    #ejaan .draggable-syllable:active {
+        cursor: grabbing;
+    }
+
+    #ejaan .drop-zone-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        margin-top: 30px;
+        min-height: 80px;
+        border: 5px solid #F4C542;
+        border-radius: 10px;
+        padding: 15px;
+        background-color: #FFF8DC;
+        box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    #ejaan .drop-zone {
+        min-width: 100px;
+        min-height: 60px;
+        border: 2px solid #ccc;
+        border-radius: 5px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 28px;
+        font-weight: bold;
+        color: #555;
+        background-color: #e9e9e9;
+        transition: background-color 0.2s, border-color 0.2s;
+    }
+
+    #ejaan .drop-zone.hover {
+        background-color: #cceeff;
+        border-color: #007bff;
+    }
+
+    #ejaan .drop-zone.filled {
+        background-color: #d4edda; /* Light green for filled */
+        border-color: #28a745;
+        color: #28a745;
+    }
+
+    #ejaan .operator-plus {
+        font-size: 36px;
+        font-weight: bold;
+        color: #555;
+        margin: 0 5px;
+    }
+
+    #ejaan .spelling-feedback-message {
+        margin-top: 20px;
+        font-size: 24px;
+        font-weight: bold;
+        min-height: 30px;
+    }
+
+    #ejaan .spelling-feedback-message.correct {
+        color: #28a745;
+    }
+
+    #ejaan .spelling-feedback-message.incorrect {
+        color: #dc3545;
+    }
+
+    #ejaan .spelling-next-button {
+        background-color: #007bff;
+        color: white;
+        font-size: 22px;
+        padding: 12px 25px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        margin-top: 20px;
+    }
+
+    #ejaan .spelling-next-button:hover {
+        background-color: #0056b3;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .tab-content h2 {
+            font-size: 36px;
+            padding: 8px 15px;
+        }
+        .nav-item {
+            font-size: 16px;
+            padding: 8px 15px;
+            margin: 0 5px;
+        }
+        .letter-box {
+            margin: 15px;
+            padding: 15px;
+        }
+        .letter-box img {
+            width: 120px;
+            height: 120px;
+        }
+        .letter-box button {
+            font-size: 28px;
+            padding: 10px 20px;
+        }
+        #kv .letter-box button {
+            font-size: 32px;
+            padding: 15px 30px;
+        }
+        #permainan .game-image {
+            width: 150px;
+            height: 150px;
+        }
+        #permainan .syllable-button {
+            font-size: 24px;
+            padding: 12px 25px;
+        }
+        #permainan .feedback-message {
+            font-size: 20px;
+        }
+        #permainan .next-button {
+            font-size: 18px;
+            padding: 10px 20px;
+        }
+        .score-board h2 {
+            font-size: 38px;
+        }
+        .score-board p {
+            font-size: 26px;
+        }
+
+        #ejaan .spelling-controls button {
+            font-size: 24px;
+            padding: 10px 20px;
+        }
+        #ejaan .draggable-syllable {
+            font-size: 24px;
+            padding: 12px 20px;
+        }
+        #ejaan .drop-zone {
+            min-width: 80px;
+            min-height: 50px;
+            font-size: 24px;
+        }
+        #ejaan .operator-plus {
+            font-size: 30px;
+        }
+        #ejaan .spelling-feedback-message {
+            font-size: 20px;
+        }
+        #ejaan .spelling-next-button {
+            font-size: 18px;
+            padding: 10px 20px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .tab-content h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+        .nav-item {
+            font-size: 14px;
+            padding: 6px 10px;
+            margin: 0 3px;
+        }
+        .letter-container {
+            flex-direction: column;
+            align-items: center;
+        }
+        .letter-box {
+            width: 80%;
+            max-width: 300px;
+        }
+        #kv .letter-box {
+            width: auto;
+            max-width: none;
+        }
+        #permainan .game-container {
+            padding: 20px;
+            margin: 20px auto;
+        }
+        #permainan .game-image {
+            width: 120px;
+            height: 120px;
+        }
+        #permainan .syllable-button {
+            font-size: 20px;
+            padding: 10px 20px;
+        }
+        #permainan .feedback-message {
+            font-size: 18px;
+        }
+        .score-board h2 {
+            font-size: 30px;
+        }
+        .score-board p {
+            font-size: 22px;
+        }
+
+        #ejaan .spelling-controls {
+            flex-direction: column;
+            gap: 10px;
+        }
+        #ejaan .spelling-controls button {
+            font-size: 20px;
+            padding: 8px 15px;
+        }
+        #ejaan .draggable-syllable {
+            font-size: 20px;
+            padding: 10px 15px;
+        }
+        #ejaan .drop-zone-container {
+            flex-direction: column;
+            gap: 5px;
+            padding: 10px;
+        }
+        #ejaan .drop-zone {
+            min-width: 60px;
+            min-height: 40px;
+            font-size: 20px;
+        }
+        #ejaan .operator-plus {
+            font-size: 24px;
+        }
+        #ejaan .spelling-feedback-message {
+            font-size: 16px;
+        }
+        #ejaan .spelling-next-button {
+            font-size: 16px;
+            padding: 8px 15px;
+        }
+
+	#pancing .tab-content#huruf {
+    position: relative; /* Ensure positioning context for pseudo-element */
+    overflow: hidden; /* Hide overflow of the water effect */
+}
+
+.tab-content#huruf::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -50%; /* Start off-screen to the left */
+    width: 200%; /* Wider than the container to allow full wave */
+    height: 100%;
+    background: linear-gradient(45deg, rgba(173, 216, 230, 0.4) 25%, rgba(135, 206, 235, 0.6) 50%, rgba(173, 216, 230, 0.4) 75%);
+    background-size: 200% 100%; /* Ensure gradient covers the width */
+    animation: waterWave 8s linear infinite; /* Adjust duration as needed */
+    pointer-events: none; /* Allow clicks to pass through */
+    z-index: 0; /* Behind other content */
+    opacity: 0.7; /* Adjust transparency */
+}
+
+@keyframes waterWave {
+    0% {
+        transform: translateX(0) translateY(0) rotate(0deg);
+        background-position: 0% 0%;
+    }
+    25% {
+        transform: translateY(-5px); /* Slight up-down motion */
+    }
+    50% {
+        transform: translateX(-50%) translateY(0) rotate(0deg);
+        background-position: 100% 0%; /* Move gradient across */
+    }
+    75% {
+        transform: translateY(5px); /* Slight up-down motion */
+    }
+    100% {
+        transform: translateX(-100%) translateY(0) rotate(0deg); /* Loop back */
+        background-position: 200% 0%;
+    }
+}
+
+/* Ensure content within 'huruf' tab is above the water effect */
+.tab-content#huruf > * {
+    position: relative;
+    z-index: 1;
+}
+    }
+
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="#" class="nav-item active" data-tab="vokal">Vokal</a>
+    <a href="#" class="nav-item" data-tab="konsonan">Konsonan</a>
+    <a href="#" class="nav-item" data-tab="kv">KV</a>
+    <a href="#" class="nav-item" data-tab="permainan">Permainan</a>
+    <a href="#" class="nav-item" data-tab="ejaan">Ejaan</a>  
+</nav>
+
+  <div id="vokal" class="tab-content active-content">
+    <h2>Belajar Bunyi Fonik Vokal</h2>
+    <div class="letter-container">
+      <div class="letter-box">
+        <img src="https://img.freepik.com/premium-vector/bantam-chicken-cartoon_194935-176.jpg?w=360">
+        <br>
+        <button onclick="playSound('a')">A</button>
+      </div>
+
+      <div class="letter-box">
+        <img src="https://img.freepik.com/free-vector/smiling-woman-avatar-illustration_1308-174699.jpg" alt="E untuk Emak">
+        <br>
+        <button onclick="playSound('e')">E</button>
+      </div>
+
+      <div class="letter-box">
+        <img src="https://img.freepik.com/premium-vector/cute-duck-cartoon-vector-illustration_921448-1453.jpg">
+        <br>
+        <button onclick="playSound('i')">I</button>
+      </div>
+
+      <div class="letter-box">
+        <img src="https://easydrawingguides.com/wp-content/uploads/2023/03/Low-Res-Cartoon-Brain_cartoon-brain-drawing-tutorial.png" alt="O untuk Otak">
+        <br>
+        <button onclick="playSound('o')">O</button>
+      </div>
+
+      <div class="letter-box">
+        <img src="https://static.vecteezy.com/system/resources/previews/007/578/744/non_2x/cute-green-snake-cartoon-vector.jpg" alt="U untuk Ular">
+        <br>
+        <button onclick="playSound('u')">U</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="konsonan" class="tab-content">
+    <h2>Belajar Bunyi Fonik Konsonan</h2>
+    <div class="letter-container">
+      <div class="letter-box">
+        <img src="https://thumbs.dreamstime.com/b/closed-book-cartoon-vector-symbol-icon-design-beautiful-illustr-illustration-isolated-white-background-97502503.jpg" alt="B for Buku">
+        <br>
+        <button onclick="playSound('b')">B</button>
+      </div>
+
+      <div class="letter-box">
+        <img src="https://img.pikbest.com/png-images/qianku/cartoon-cup-png-download_2045523.png!sw800" alt="C for Cawan">
+        <br>
+        <button onclick="playSound('c')">C</button>
+      </div>
+
+      <div class="letter-box">
+        <img src="https://media.istockphoto.com/id/697587600/vector/doodle-of-two-white-dice-with-contour.jpg?s=612x612&w=0&k=20&c=1ydsHhMipt7RH3IexIW4RKPOzrWCUUv7KkfDq-jPiLs=" alt="D for Dadu">
+        <br>
+        <button onclick="playSound('d')">D</button>
+      </div>
+
+      <div class="letter-box">
+        <img src="https://img.freepik.com/premium-vector/camera-film-roll-cartoon-illustration-cinema-icon-concept-white-isolated-flat-cartoon-style_75802-229.jpg" alt="F for Foto">
+        <br>
+        <button onclick="playSound('f')">F</button>
+      </div>
+
+      <div class="letter-box">
+        <img src="https://media.istockphoto.com/id/1178274331/vector/gray-elephant-cute-character-colorful-vector-illustration-cartoon-style-isolated-on-white.jpg?s=612x612&w=0&k=20&c=WrAXTY3pb70XPxvTF5WQXw2_hQrZFImBivRvlj0tyh8=" alt="G for Gajah">
+        <br>
+        <button onclick="playSound('g')">G</button>
+      </div>
+
+      <div class="letter-box">
+        <img src="https://img.freepik.com/free-vector/cheerful-cartoon-tiger-cub-sitting_1308-162293.jpg?semt=ais_hybrid&w=740" alt="H for Harimau">
+        <br>
+        <button onclick="playSound('h')">H</button>
+      </div>
+
+      <div class="letter-box">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRw2u6cvGinLDir7biLlVyCuWDEdTqnZtp5xA&s" alt="J for Jari">
+        <br>
+        <button onclick="playSound('j')">J</button>
+      </div>
+
+      <div class="letter-box">
+        <img src="https://www.shutterstock.com/image-vector/outside-foot-600nw-208930597.jpg" alt="K for Kaki">
+        <br>
+        <button onclick="playSound('KAKI')">K</button>
+      </div>
+
+      <div class="letter-box">
+        <img src="https://media.istockphoto.com/id/1163660626/vector/pumpkin-isolated-on-white-background-cartoon-orange-squash-for-halloween-thanksgiving-autumn.jpg?s=612x612&w=0&k=20&c=4sduAwNhCSuARU5mQqFotFs0lDlgdotNOAafCnvWCac=" alt="L for Labu">
+        <br>
+        <button onclick="playSound('l')">L</button>
+      </div>
+
+      <div class="letter-box">
+        <img src="https://img.freepik.com/premium-vector/table-cartoon_119631-412.jpg?w=360" alt="M for Meja">
+        <br>
+        <button onclick="playSound('m')">M</button>
+      </div>
+
+      <div class="letter-box">
+        <img src="https://img.freepik.com/premium-vector/white-rice-cooked-asian-bowl_184560-523.jpg" alt="N for Nasi">
+        <br>
+        <button onclick="playSound('n')">N</button>
+      </div>
+
+      <div class="letter-box">
+        <img src="https://img.freepik.com/premium-vector/blue-pen-with-yellow-cap-it_844724-299.jpg">
+        <br>
+        <button onclick="playSound('p')">P</button>
+      </div>
+
+      <div class="letter-box">
+        <img src="https://img.freepik.com/premium-vector/moslem-boy-reading-koran_7814-563.jpg?w=360">
+        <br>
+        <button onclick="playSound('q')">Q</button>
+      </div>
+
+      <div class="letter-box">
+        <img src="https://img.freepik.com/premium-vector/hand-drawn-cartoon-bread-illustration_561641-3615.jpg" alt="R for Roti">
+        <br>
+        <button onclick="playSound('r')">R</button>
+      </div>
+
+      <div class="letter-box">
+        <img src="https://img.freepik.com/premium-vector/milk-cartoon-vector-illustration-cute-milk-carton-cartoon-drawing-with-glass-milk_648083-558.jpg" alt="S for Susu">
+        <br>
+        <button onclick="playSound('s')">S</button>
+      </div>
+
+      <div class="letter-box">
+        <img src="https://img.freepik.com/free-vector/hand-drawn-cap-cartoon-illustration_23-2150985768.jpg?semt=ais_hybrid&w=740" alt="T for Topi">
+        <br>
+        <button onclick="playSound('t')">T</button>
+      </div>
+
+      <div class="letter-box">
+        <img src="https://img.freepik.com/premium-vector/isolated-cartoon-transportation-vehicle-retro-van-motion_1263357-22873.jpg?semt=ais_hybrid&w=740">
+        <br>
+        <button onclick="playSound('v')">V</button>
+      </div>
+
+      <div class="letter-box">
+        <img src="https://png.pngtree.com/png-clipart/20191121/original/pngtree-whistle-of-referee-icon-cartoon-style-png-image_5152072.jpg">
+        <br>
+        <button onclick="playSound('w')">W</button>
+      </div>
+
+      <div class="letter-box">
+        <img src="https://img.freepik.com/premium-vector/yo-yo-toy-cartoon_7814-162.jpg?w=360">
+        <br>
+        <button onclick="playSound('y')">Y</button>
+      </div>
+
+      <div class="letter-box">
+        <img src="https://i.pinimg.com/736x/2b/c4/89/2bc489f1929175be30233201c05ea4f1.jpg">
+        <br>
+        <button onclick="playSound('z')">Z</button>
+      </div>
+
+    </div>
+  </div>
+
+  <div id="kv" class="tab-content">
+    <h2>Belajar Bunyi Fonik KV</h2>
+    <div class="letter-container">
+      <div class="letter-box">
+        <button onclick="playSound('ba')">ba</button>
+      </div>
+
+      <div class="letter-box">
+        <button onclick="playSound('bi')">bi</button>
+      </div>
+
+      <div class="letter-box">
+        <button onclick="playSound('bu')">bu</button>
+      </div>
+
+      <div class="letter-box">
+        <button onclick="playSound('be')">be</button>
+      </div>
+
+      <div class="letter-box">
+        <button onclick="playSound('bo')">bo</button>
+      </div>
+
+      <div class="letter-box">
+        <button onclick="playSound('da')">da</button>
+      </div>
+
+      <div class="letter-box">
+        <button onclick="playSound('di')">di</button>
+      </div>
+
+      <div class="letter-box">
+        <button onclick="playSound('du')">du</button>
+      </div>
+
+      <div class="letter-box">
+        <button onclick="playSound('de')">de</button>
+      </div>
+
+      <div class="letter-box">
+        <button onclick="playSound('do')">do</button>
+      </div>
+
+      <div class="letter-box">
+        <button onclick="playSound('da')">ka</button>
+      </div>
+
+      <div class="letter-box">
+        <button onclick="playSound('di')">ki</button>
+      </div>
+
+      <div class="letter-box">
+        <button onclick="playSound('du')">ku</button>
+      </div>
+
+      <div class="letter-box">
+        <button onclick="playSound('de')">ke</button>
+      </div>
+
+      <div class="letter-box">
+        <button onclick="playSound('do')">ko</button>
+      </div>
+
+      <div class="letter-box">
+        <button onclick="playSound('na')">ma</button>
+      </div>
+
+      <div class="letter-box">
+        <button onclick="playSound('pa')">mi</button>
+      </div>
+
+      <div class="letter-box">
+        <button onclick="playSound('ra')">mu</button>
+      </div>
+
+      <div class="letter-box">
+        <button onclick="playSound('sa')">me</button>
+      </div>
+
+      <div class="letter-box">
+        <button onclick="playSound('ta')">mo</button>
+      </div>
+
+      <div class="letter-box">
+        <button onclick="playSound('va')">na</button>
+      </div>
+
+      <div class="letter-box">
+        <button onclick="playSound('wa')">ni</button>
+      </div>
+
+      <div class="letter-box">
+        <button onclick="playSound('ya')">nu</button>
+      </div>
+
+      <div class="letter-box">
+        <button onclick="playSound('z')">ne</button>
+      </div>
+
+      <div class="letter-box">
+        <button onclick="playSound('z')">no</button>
+      </div>
+
+ <div class="letter-box">
+        <button onclick="playSound('va')">sa</button>
+      </div>
+
+      <div class="letter-box">
+        <button onclick="playSound('wa')">si</button>
+      </div>
+
+      <div class="letter-box">
+        <button onclick="playSound('ya')">su</button>
+      </div>
+
+      <div class="letter-box">
+        <button onclick="playSound('z')">se</button>
+      </div>
+
+      <div class="letter-box">
+        <button onclick="playSound('z')">so</button>
+      </div>
+
+    </div>
+  </div>
+
+  <div id="permainan" class="tab-content">
+    <h2>Permainan Suku Kata</h2>
+    <div class="game-container">
+      <p id="scoreDisplay" class="score-display">Skor: 0 / 17</p> <img id="gameImage" class="game-image" src="" alt="Gambar perkataan">
+      <div class="syllable-options" id="syllableOptions">
+        </div>
+      <div id="feedbackMessage" class="feedback-message"></div>
+      <button id="nextButton" class="next-button" style="display: none;">Seterusnya</button>
+    </div>
+  </div>
+
+  <div id="ejaan" class="tab-content">
+    <h2>Belajar Suku Kata dan Ejaan</h2>
+    <div class="spelling-game-container">
+        <p id="spellingScoreDisplay" class="score-display">Skor: 0 / 0</p>
+        <div class="spelling-controls">
+            <button id="spellingPlaySoundButton">Dengar Bunyi Perkataan</button>
+        </div>
+        <div id="syllableDragOptions" class="syllable-drag-options">
+            </div>
+        <div id="dropZoneContainer" class="drop-zone-container">
+            </div>
+        <div id="spellingFeedbackMessage" class="spelling-feedback-message"></div>
+        <button id="spellingNextButton" class="spelling-next-button" style="display: none;">Seterusnya</button>
+    </div>
+  </div>
+
+  <audio id="a" src="a.m4a"></audio>
+  <audio id="e" src="e.m4a"></audio>
+  <audio id="i" src="i.m4a"></audio>
+  <audio id="o" src="o.m4a"></audio>
+  <audio id="u" src="u.m4a"></audio>
+  <audio id="b" src=""></audio>
+  <audio id="c" src=""></audio>
+  <audio id="d" src=""></audio>
+  <audio id="f" src=""></audio>
+  <audio id="g" src=""></audio>
+  <audio id="h" src=""></audio>
+  <audio id="j" src=""></audio>
+  <audio id="k" src=""></audio>
+  <audio id="l" src=""></audio>
+  <audio id="m" src=""></audio>
+  <audio id="n" src=""></audio>
+  <audio id="p" src=""></audio>
+  <audio id="q" src=""></audio>
+  <audio id="r" src=""></audio>
+  <audio id="s" src=""></audio>
+  <audio id="t" src=""></audio>
+  <audio id="v" src=""></audio>
+  <audio id="w" src=""></audio>
+  <audio id="y" src=""></audio>
+  <audio id="z" src=""></audio>
+  <audio id="ba_sound" src=""></audio>
+  <audio id="ka_sound" src=""></audio>
+  <audio id="me_sound" src=""></audio>
+  <audio id="na_sound" src=""></audio>
+  <audio id="ro_sound" src=""></audio>
+  <audio id="su_sound" src=""></audio>
+  <audio id="to_sound" src=""></audio>
+  <audio id="ci_sound" src=""></audio>
+  <audio id="du_sound" src=""></audio>
+  <audio id="gi_sound" src=""></audio>
+  <audio id="ku_sound" src=""></audio>
+  <audio id="li_sound" src=""></audio>
+  <audio id="pi_sound" src=""></audio>
+  <audio id="ru_sound" src=""></audio>
+  <audio id="ta_sound" src=""></audio>
+  <audio id="bu_sound" src=""></audio>
+  <audio id="ca_sound_game" src=""></audio>
+  <audio id="da_sound_game" src=""></audio>
+  <audio id="baju_word_sound" src=""></audio>
+ 
+  <audio id="meja_word_sound" src=""></audio>
+  <audio id="cili_word_sound" src=""></audio>
+  <audio id="kuda_word_sound" src=""></audio>
+  <audio id="gigi_word_sound" src=""></audio>
+
+  <audio id="BUKU" src="buku.mp3"></audio>
+
+  <audio id="clapping_sound" src=""></audio> 
+  <audio id="win_sound" src="menang.mp3"></audio> 
+  <audio id="correct_sound" src="betul.mp3"></audio> 
+  <audio id="wrong_sound" src="salah.mp3"></audio> 
+
+  <audio id="KAMI" src="kami.mp3"></audio>
+  <audio id="NASI" src="nasi.mp3"></audio>
+  <audio id="KAKI" src="kaki.mp3"></audio>
+  <audio id="LIMA" src="lima.mp3"></audio>
+  <audio id="ROTI" src="roti.mp3"></audio>
+
+  <script>
+    const gameWords = [
+        { word: "Baju", image: "https://img.freepik.com/premium-vector/shirt-cartoon_119631-405.jpg", correctSyllable: "Ba", options: ["Ba", "Ju", "Ku"], audioId: "ba_sound" },
+        { word: "Kaki", image: "https://www.shutterstock.com/image-vector/outside-foot-600nw-208930597.jpg", correctSyllable: "Ka", options: ["Ki", "Ka", "Mi"], audioId: "KAKI" },
+        { word: "Meja", image: "https://img.freepik.com/premium-vector/table-cartoon_119631-412.jpg?w=360", correctSyllable: "Me", options: ["Ja", "Me", "Na"], audioId: "me_sound" },
+        { word: "Nasi", image: "https://img.freepik.com/premium-vector/white-rice-cooked-asian-bowl_184560-523.jpg", correctSyllable: "Na", options: ["Si", "Na", "Pi"], audioId: "NASI" },
+        { word: "Satu", image: "https://cdn-icons-png.freepik.com/512/6055/6055946.png", correctSyllable: "Sa", options: ["Sa", "to", "tu"], audioId: "ro_sound" }, // ro_sound here is placeholder, should be sa_sound
+        { word: "Susu", image: "https://img.freepik.com/premium-vector/milk-cartoon-vector-illustration-cute-milk-carton-cartoon-drawing-with-glass-milk_648083-558.jpg", correctSyllable: "Su", options: ["Su", "Pu", "Mu"], audioId: "su_sound" },
+        { word: "Topi", image: "https://img.freepik.com/free-vector/hand-drawn-cap-cartoon-illustration_23-2150985768.jpg?semt=ais_hybrid&w=740", correctSyllable: "To", options: ["Pi", "To", "Lo"], audioId: "to_sound" },
+        { word: "Cili", image: "https://img.freepik.com/free-vector/hot-chilli-pepper-spicy-food-cartoon-hand-draw-character-vector-art-illustration_56104-1255.jpg", correctSyllable: "Ci", options: ["Ci", "Li", "Bi"], audioId: "ci_sound" },
+        { word: "Kuda", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQIdvVVXej0RbOIsQe0TpZZHvvrX9r_90Wlcg&s", correctSyllable: "Ku", options: ["Ku", "Du", "Gu"], audioId: "du_sound" }, // du_sound here is placeholder, should be ku_sound
+        { word: "Gigi", image: "https://i.pinimg.com/736x/b6/77/73/b6777347a6a6ac60fb3e1f6f823a124b.jpg", correctSyllable: "Gi", options: ["Gi", "Ji", "Li"], audioId: "gi_sound" },
+        { word: "Kuku", image: "https://img.freepik.com/premium-vector/female-hand-with-completed-manicure-painted-nails-vector-illustrations-cartoon-style-design-decoration_224655-520.jpg?w=360", correctSyllable: "Ku", options: ["Ku", "Mu", "Nu"], audioId: "ku_sound" },
+        { word: "Lima", image: "https://img.freepik.com/premium-vector/vector-cartoon-illustration-number-five-figure-5_574806-1730.jpg", correctSyllable: "Li", options: ["Ma", "Li", "Ri"], audioId: "li_sound" },
+        { word: "roti", image: "https://img.freepik.com/premium-vector/hand-drawn-cartoon-bread-illustration_561641-3615.jpg", correctSyllable: "ro", options: ["ra", "ri", "ro"], audioId: "ro_sound" },
+        { word: "Rusa", image: "https://img.freepik.com/premium-vector/cartoon-drawing-deer-with-spots-its-body_1124223-1831.jpg", correctSyllable: "Ru", options: ["Sa", "Ru", "Bu"], audioId: "ru_sound" },
+        { word: "Tali", image: "https://media.istockphoto.com/id/1159542493/vector/rope-in-cartoon-style.jpg?s=170667a&w=0&k=20&c=mZwP_GjfgKz_E8btUn5f6DkM5a4UKewwZxZBa4MPvc0=", correctSyllable: "Ta", options: ["Li", "Ta", "Pa"], audioId: "ta_sound" },
+        { word: "Buku", image: "https://thumbs.dreamstime.com/b/closed-book-cartoon-vector-symbol-icon-design-beautiful-illustr-illustration-isolated-white-background-97502503.jpg", correctSyllable: "Bu", options: ["Bu", "Ku", "Du"], audioId: "bu_sound" },
+        { word: "Cawan", image: "https://img.pikbest.com/png-images/qianku/cartoon-cup-png-download_2045523.png!sw800", correctSyllable: "Ca", options: ["Wan", "Ca", "Da"], audioId: "ca_sound_game" }
+    ];
+
+    // Data untuk Permainan Ejaan (Manual)
+    const spellingWords = [
+        {
+            word: "BUKU",
+            syllables: ["BU", "KU"],
+            audioId: "BUKU", // Audio untuk perkataan penuh "BUKU"
+            options: ["BA", "BU", "KU", "LA"] // Pilihan yang mungkin untuk diseret
+        },
+        {
+            word: "KAMI",
+            syllables: ["KA", "MI"],
+            audioId: "KAMI",
+            options: ["KA", "MI", "PI", "TU"]
+        },
+        {
+            word: "NASI",
+            syllables: ["NA", "SI"],
+            audioId: "NASI",
+            options: ["NA", "SI", "LI", "RU"]
+        },
+        {
+            word: "ROTI",
+            syllables: ["RO", "TI"],
+            audioId: "ROTI",
+            options: ["RO", "TI", "GA", "DI"]
+        },
+        {
+            word: "LIMA",
+            syllables: ["LI", "MA"],
+            audioId: "LIMA",
+            options: ["LI", "MA", "DA", "WI"]
+        }
+    ];
+
+    let currentWordIndex = 0;
+    let score = 0;
+    const scoreToWin = gameWords.length; // Markah untuk menang dalam permainan suku kata
+
+    let currentSpellingWordIndex = 0;
+    let spellingScore = 0;
+    const spellingScoreToWin = spellingWords.length; // Markah untuk menang dalam permainan ejaan
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const tabButtons = document.querySelectorAll('.nav-item');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const nextButton = document.getElementById('nextButton');
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', (event) => {
+                event.preventDefault();
+
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                tabContents.forEach(content => content.classList.remove('active-content'));
+
+                button.classList.add('active');
+
+                const targetId = button.dataset.tab;
+                document.getElementById(targetId).classList.add('active-content');
+
+                if (targetId === 'permainan') {
+                    startGame();
+                } else if (targetId === 'ejaan') {
+                    startSpellingGame();
+                }
+            });
+        });
+
+        // Initialize games if their tabs are active on load (optional, defaults to Vokal)
+        // If you want a specific tab to be active on load, set 'active' class on that tab button and content div.
+        // For example, if you want 'Vokal' to be active, ensure it has `active` and `active-content`.
+    });
+
+    function playSound(id) {
+      const audio = document.getElementById(id);
+      if (audio && audio.src) {
+          audio.currentTime = 0;
+          audio.play().catch(e => console.error("Error playing sound:", e));
+      } else {
+          console.error(`Audio for ID '${id}' not found or has no source.`);
+      }
+    }
+
+    // Fungsi Permainan Suku Kata (tab 'permainan')
+    function startGame() {
+        currentWordIndex = 0;
+        score = 0;
+        updateScoreDisplay();
+        gameWords.sort(() => Math.random() - 0.5);
+        loadWord();
+    }
+
+    function updateScoreDisplay() {
+        const scoreDisplayElement = document.getElementById('scoreDisplay');
+        if (scoreDisplayElement) {
+            scoreDisplayElement.textContent = `Skor: ${score} / ${gameWords.length}`;
+        }
+    }
+
+    function loadWord() {
+        const gameContainer = document.querySelector('#permainan .game-container');
+        if (gameContainer) {
+            gameContainer.style.display = 'flex';
+        }
+
+        if (currentWordIndex >= gameWords.length) {
+            endGame(false);
+            return;
+        }
+
+        const currentWordData = gameWords[currentWordIndex];
+        const gameImage = document.getElementById('gameImage');
+        const syllableOptionsDiv = document.getElementById('syllableOptions');
+        const feedbackMessage = document.getElementById('feedbackMessage');
+        const nextButton = document.getElementById('nextButton');
+
+        if (gameImage) gameImage.src = currentWordData.image;
+        if (gameImage) gameImage.alt = `Gambar ${currentWordData.word}`;
+        if (feedbackMessage) {
+            feedbackMessage.textContent = '';
+            feedbackMessage.classList.remove('correct', 'incorrect');
+        }
+        if (nextButton) nextButton.style.display = 'none';
+
+        if (syllableOptionsDiv) syllableOptionsDiv.innerHTML = '';
+
+        const shuffledOptions = [...currentWordData.options].sort(() => Math.random() - 0.5);
+
+        shuffledOptions.forEach(option => {
+            const button = document.createElement('button');
+            button.textContent = option;
+            button.classList.add('syllable-button');
+            button.addEventListener('click', () => checkAnswer(option, currentWordData.correctSyllable, currentWordData.audioId));
+            if (syllableOptionsDiv) syllableOptionsDiv.appendChild(button);
+        });
+    }
+
+    function checkAnswer(selectedSyllable, correctSyllable, audioId) {
+        const feedbackMessage = document.getElementById('feedbackMessage');
+        const nextButton = document.getElementById('nextButton');
+        const syllableButtons = document.querySelectorAll('#permainan .syllable-button');
+
+        syllableButtons.forEach(button => {
+            button.disabled = true;
+            if (button.textContent === correctSyllable) {
+                button.style.backgroundColor = '#28a745';
+            } else if (button.textContent === selectedSyllable) {
+                button.style.backgroundColor = '#dc3545';
+            }
+        });
+
+        if (selectedSyllable === correctSyllable) {
+            if (feedbackMessage) {
+                feedbackMessage.textContent = 'Betul! Bagus!';
+                feedbackMessage.classList.remove('incorrect');
+                feedbackMessage.classList.add('correct');
+            }
+            score++;
+            updateScoreDisplay();
+            playSound(audioId);
+            playSound('correct_sound');
+
+            if (score >= scoreToWin) {
+                endGame(true);
+            } else {
+                setTimeout(nextWord, 1000);
+            }
+        } else {
+            if (feedbackMessage) {
+                feedbackMessage.textContent = `Salah. Jawapan yang betul ialah ${correctSyllable}.`;
+                feedbackMessage.classList.remove('correct');
+                feedbackMessage.classList.add('incorrect');
+            }
+            playSound('wrong_sound');
+            if (nextButton) {
+                nextButton.style.display = 'block';
+                nextButton.onclick = nextWord;
+            }
+        }
+    }
+
+    function nextWord() {
+        currentWordIndex++;
+        loadWord();
+    }
+
+    function endGame(hasWon) {
+        const permainanTab = document.getElementById('permainan');
+        if (permainanTab) {
+            permainanTab.innerHTML = `
+                <h2>Permainan Tamat!</h2>
+                <div class="score-board">
+                    <h2>${hasWon ? 'Tahniah, Anda Berjaya!' : 'Cubalah Lagi!'}</h2>
+                    <p>Skor Akhir: ${score} daripada ${gameWords.length}</p>
+                    <button class="next-button" onclick="restartGame()">Main Semula</button>
+                </div>
+            `;
+            if (hasWon) {
+                playSound('win_sound');
+            }
+        }
+    }
+
+    function restartGame() {
+        const permainanTab = document.getElementById('permainan');
+        if (permainanTab) {
+            permainanTab.innerHTML = `
+                <h2>Permainan Suku Kata</h2>
+                <div class="game-container">
+                  <p id="scoreDisplay" class="score-display">Skor: 0 / ${gameWords.length}</p>
+                  <img id="gameImage" class="game-image" src="" alt="Gambar perkataan">
+                  <div id="syllableOptions">
+                  </div>
+                  <div id="feedbackMessage" class="feedback-message"></div>
+                  <button id="nextButton" class="next-button" style="display: none;">Seterusnya</button>
+                </div>
+            `;
+            const nextButton = document.getElementById('nextButton');
+            if (nextButton) {
+                nextButton.addEventListener('click', nextWord);
+            }
+            startGame();
+        }
+    }
+
+    // Fungsi Permainan Ejaan (tab 'ejaan')
+    function startSpellingGame() {
+        currentSpellingWordIndex = 0;
+        spellingScore = 0;
+        updateSpellingScoreDisplay();
+        spellingWords.sort(() => Math.random() - 0.5); // Acak susunan perkataan
+        loadSpellingWord();
+    }
+
+    function updateSpellingScoreDisplay() {
+        const scoreDisplayElement = document.getElementById('spellingScoreDisplay');
+        if (scoreDisplayElement) {
+            scoreDisplayElement.textContent = `Skor: ${spellingScore} / ${spellingWords.length}`;
+        }
+    }
+
+    function loadSpellingWord() {
+        const spellingGameContainer = document.querySelector('#ejaan .spelling-game-container');
+        if (spellingGameContainer) {
+            spellingGameContainer.style.display = 'flex';
+        }
+
+        if (currentSpellingWordIndex >= spellingWords.length) {
+            endSpellingGame(false);
+            return;
+        }
+
+        const currentWordData = spellingWords[currentSpellingWordIndex];
+        const syllableDragOptions = document.getElementById('syllableDragOptions');
+        const dropZoneContainer = document.getElementById('dropZoneContainer');
+        const spellingFeedbackMessage = document.getElementById('spellingFeedbackMessage');
+        const spellingNextButton = document.getElementById('spellingNextButton');
+        const spellingPlaySoundButton = document.getElementById('spellingPlaySoundButton');
+
+        if (spellingFeedbackMessage) {
+            spellingFeedbackMessage.textContent = '';
+            spellingFeedbackMessage.classList.remove('correct', 'incorrect');
+        }
+        if (spellingNextButton) spellingNextButton.style.display = 'none';
+
+        // Set up play sound button for the full word
+        if (spellingPlaySoundButton) {
+            spellingPlaySoundButton.onclick = () => playSound(currentWordData.audioId);
+        }
+
+        // Clear previous options and drop zones
+        if (syllableDragOptions) syllableDragOptions.innerHTML = '';
+        if (dropZoneContainer) dropZoneContainer.innerHTML = '';
+
+        // Create draggable syllable options
+        const allPossibleOptions = [...currentWordData.options];
+        allPossibleOptions.sort(() => Math.random() - 0.5); // Acak pilihan
+
+        allPossibleOptions.forEach(syllable => {
+            const draggableDiv = document.createElement('div');
+            draggableDiv.textContent = syllable;
+            draggableDiv.classList.add('draggable-syllable');
+            draggableDiv.setAttribute('draggable', 'true');
+            draggableDiv.id = `draggable-${syllable}`; // Unique ID for each draggable
+            draggableDiv.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('text/plain', syllable);
+                e.dataTransfer.effectAllowed = 'move';
+                draggableDiv.classList.add('dragging');
+            });
+            syllableDragOptions.appendChild(draggableDiv);
+        });
+
+        // Create drop zones
+        currentWordData.syllables.forEach((syllable, index) => {
+            const dropZone = document.createElement('div');
+            dropZone.classList.add('drop-zone');
+            dropZone.dataset.expectedSyllable = syllable; // Store expected syllable
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('hover');
+                e.dataTransfer.dropEffect = 'move';
+            });
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.classList.remove('hover');
+            });
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('hover');
+                const draggedSyllable = e.dataTransfer.getData('text/plain');
+
+                // Only allow dropping if the drop zone is empty
+                if (!dropZone.textContent) {
+                    dropZone.textContent = draggedSyllable;
+                    dropZone.classList.add('filled');
+                    // Hide the dragged item from the options list
+                    const originalDraggable = document.getElementById(`draggable-${draggedSyllable}`);
+                    if (originalDraggable) {
+                        originalDraggable.style.display = 'none';
+                    }
+                }
+                checkSpellingAnswer();
+            });
+            dropZoneContainer.appendChild(dropZone);
+
+            if (index < currentWordData.syllables.length - 1) {
+                const plusOperator = document.createElement('span');
+                plusOperator.classList.add('operator-plus');
+                plusOperator.textContent = '+';
+                dropZoneContainer.appendChild(plusOperator);
+            }
+        });
+    }
+
+    function checkSpellingAnswer() {
+        const currentWordData = spellingWords[currentSpellingWordIndex];
+        const dropZones = document.querySelectorAll('#ejaan .drop-zone');
+        const spellingFeedbackMessage = document.getElementById('spellingFeedbackMessage');
+        const spellingNextButton = document.getElementById('spellingNextButton');
+
+        let isCorrect = true;
+        let droppedSyllables = [];
+
+        dropZones.forEach((zone, index) => {
+            const droppedText = zone.textContent;
+            droppedSyllables.push(droppedText);
+
+            if (droppedText !== currentWordData.syllables[index]) {
+                isCorrect = false;
+            }
+        });
+
+        if (isCorrect && droppedSyllables.every(s => s !== '')) { // Ensure all slots are filled and correct
+            spellingScore++;
+            updateSpellingScoreDisplay();
+            if (spellingFeedbackMessage) {
+                spellingFeedbackMessage.textContent = 'Betul! Hebat!';
+                spellingFeedbackMessage.classList.remove('incorrect');
+                spellingFeedbackMessage.classList.add('correct');
+            }
+            playSound('correct_sound');
+
+            // Disable further dragging/dropping and indicate correctness
+            document.querySelectorAll('.draggable-syllable').forEach(btn => btn.setAttribute('draggable', 'false'));
+            dropZones.forEach(zone => zone.style.borderColor = '#28a745');
+
+            if (spellingScore >= spellingScoreToWin) {
+                endSpellingGame(true);
+            } else {
+                setTimeout(nextSpellingWord, 1500); // Tunggu sebentar sebelum ke soalan seterusnya
+            }
+        } else if (droppedSyllables.some(s => s === '')) {
+            // Do nothing if not all slots are filled yet, wait for user to complete
+            if (spellingFeedbackMessage) {
+                spellingFeedbackMessage.textContent = 'Lengkapkan perkataan.';
+                spellingFeedbackMessage.classList.remove('correct', 'incorrect');
+            }
+        } else { // All slots filled, but incorrect
+            if (spellingFeedbackMessage) {
+                spellingFeedbackMessage.textContent = 'Salah. Cuba lagi!';
+                spellingFeedbackMessage.classList.remove('correct');
+                spellingFeedbackMessage.classList.add('incorrect');
+            }
+            playSound('wrong_sound');
+            if (spellingNextButton) {
+                spellingNextButton.style.display = 'block';
+                spellingNextButton.onclick = nextSpellingWord; // Allow user to skip or retry
+            }
+            // Reset drop zones to empty and make draggable items visible again
+            setTimeout(() => {
+                dropZones.forEach(zone => {
+                    const droppedSyllable = zone.textContent;
+                    zone.textContent = '';
+                    zone.classList.remove('filled');
+                    zone.style.borderColor = '#ccc'; // Reset border color
+
+                    const originalDraggable = document.getElementById(`draggable-${droppedSyllable}`);
+                    if (originalDraggable) {
+                        originalDraggable.style.display = 'block'; // Make it visible again
+                    }
+                });
+            }, 1000); // Clear after 1 second
+        }
+    }
+
+    function nextSpellingWord() {
+        currentSpellingWordIndex++;
+        loadSpellingWord();
+    }
+
+    function endSpellingGame(hasWon) {
+        const ejaanTab = document.getElementById('ejaan');
+        if (ejaanTab) {
+            ejaanTab.innerHTML = `
+                <h2>Permainan Tamat!</h2>
+                <div class="score-board">
+                    <h2>${hasWon ? 'Tahniah, Anda Menang!' : 'Cubalah Lagi!'}</h2>
+                    <p>Skor Akhir: ${spellingScore} daripada ${spellingWords.length}</p>
+                    <button class="next-button" onclick="restartSpellingGame()">Main Semula</button>
+                </div>
+            `;
+            if (hasWon) {
+                playSound('win_sound');
+            }
+        }
+    }
+
+    function restartSpellingGame() {
+        const ejaanTab = document.getElementById('ejaan');
+        if (ejaanTab) {
+            ejaanTab.innerHTML = `
+                <h2>Belajar Suku Kata dan Ejaan</h2>
+                <div class="spelling-game-container">
+                    <p id="spellingScoreDisplay" class="score-display">Skor: 0 / 0</p>
+                    <div class="spelling-controls">
+                        <button id="spellingPlaySoundButton">Dengar Bunyi Perkataan</button>
+                    </div>
+                    <div id="syllableDragOptions" class="syllable-drag-options">
+                    </div>
+                    <div id="dropZoneContainer" class="drop-zone-container">
+                    </div>
+                    <div id="spellingFeedbackMessage" class="spelling-feedback-message"></div>
+                    <button id="spellingNextButton" class="spelling-next-button" style="display: none;">Seterusnya</button>
+                </div>
+            `;
+            // Re-attach event listeners after re-creating elements
+            document.getElementById('spellingNextButton').addEventListener('click', nextSpellingWord);
+            document.getElementById('spellingPlaySoundButton').addEventListener('click', () => playSound(spellingWords[currentSpellingWordIndex].audioId));
+            startSpellingGame();
+        }
+    }
+
+  </script>
+</body>
+</html>
